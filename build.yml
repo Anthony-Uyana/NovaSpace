@@ -1,0 +1,62 @@
+name: Build, Test & Deploy to Azure
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Run Tests
+        run: dotnet test --no-build -c Release --collect:"XPlat Code Coverage"
+
+      - name: Publish API
+        run: dotnet publish src/Api/Api.csproj -c Release -o publish_api
+
+      - name: Publish Client
+        run: dotnet publish src/Client/Client.csproj -c Release -o publish_client
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: drop
+          path: |
+            publish_api
+            publish_client
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-test   # <- esto asegura que solo se ejecuta si build-test pasa
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: drop
+          path: .
+
+      - name: Deploy API
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: novasp-api
+          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
+          package: publish_api
+
+      - name: Deploy Client
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: novasp-client
+          publish-profile: ${{ secrets.AZURE_CLIENT_PUBLISH_PROFILE }}
+          package: publish_client

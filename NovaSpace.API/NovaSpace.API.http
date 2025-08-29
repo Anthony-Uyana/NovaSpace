@@ -1,0 +1,6 @@
+@NovaSpace.API_HostAddress = http://localhost:5073
+
+GET {{NovaSpace.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

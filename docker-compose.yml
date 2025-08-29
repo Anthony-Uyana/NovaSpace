@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: novadb
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+
+  api:
+    build: ./src/NovaSpace.Api
+    ports:
+      - "5000:80"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__Default=Server=db;Database=NovaSpace;User=sa;Password=Your_password123;TrustServerCertificate=True;
+
+  client:
+    build: ./src/NovaSpace.Client
+    ports:
+      - "5001:80"
+    depends_on:
+      - api
+
+volumes:
+  sqlserver_data:
