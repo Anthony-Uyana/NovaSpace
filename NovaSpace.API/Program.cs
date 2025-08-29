@@ -20,7 +20,6 @@ namespace NovaSpace.API
             {
                 app.MapOpenApi();
             }
-            //Test Comment
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
