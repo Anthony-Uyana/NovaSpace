@@ -1,33 +1,29 @@
+namespace NovaSpace.API;
 
-namespace NovaSpace.API
+public static class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        _ = builder.Services.AddControllers();
+
+        _ = builder.Services.AddOpenApi();
+
+        WebApplication app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
         {
-            var builder = WebApplication.CreateBuilder(args);
+            _ = app.MapOpenApi();
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
         }
+
+        string testp = "";
+        Console.WriteLine(testp);
+        _ = app.UseHttpsRedirection();
+        _ = app.UseAuthorization();
+        _ = app.MapControllers();
+
+        app.Run();
     }
 }
